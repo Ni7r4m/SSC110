@@ -79,11 +79,15 @@ struct schedules schedule[100];
             {
                 char buffer[200];  // assume all lines are less than 199 characters
                 int n = 0;
+                char priority[3];
                 
-                while(fgets(buffer, 200, fileHandle) != NULL) //checks if there is a line
+                while(fgets(buffer, 200, fileHandle) != NULL) //checks if there is a line 
                 {
-                    if(fscanf(fileHandle, "%30[^ ,\n\t], %3[^ ,\n\t], %4[^ ,\n\t]", schedule[n].name, schedule[n].priority, schedule[n].duration) == 3) //formatting check
+                    if(sscanf(buffer, "%30[^ ,\n\t], %3[^ ,\n\t], %4[^ ,\n\t]", schedule[n].name, priority, schedule[n].duration) == 3)
+                     //formatting check
                     {
+                        printf("%d", n);
+                        schedule[n].priority = atoi(priority);
                         n++;
                     }
                 }
@@ -114,7 +118,7 @@ struct schedules schedule[100];
             numUsed = sizeof(schedule) / sizeof(schedule[0]);
             while(i < numUsed){
                 fprintf(fileHandle, "%-35s %-13d %s\n", schedule[i].name, schedule[i].priority, schedule[i].duration);
-                i = i+1;
+                i++;
             }
 
             printf("Exported txt file successfully.\n");

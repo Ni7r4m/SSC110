@@ -3,31 +3,42 @@
 #include <stdlib.h>
 
 
-void time(char *time)
+ /* void time(char *time)
 {
-    
-
 }
 
 
 
-struct schedules {
+/*void count(char *a, char *b)
+{
+    int hStart, mStart, hEnd, mEnd;
+    hStart = (atoi(strlen(*a, )));
+    mStart = (atoi(*a));
+    hEnd = (atoi(*b));
+    mEnd = (atoi(*b));
+
+    if(mStart + mEnd>=60)
+    {
+        hEnd++;
+        strcpy()
+    }
+}*/
+
+
+typedef struct s_schedules {
     char name[30];
     char duration[4]; 
     int priority;
-};
+} schedules;
 
 int main()
 {
     char input[10];
-    char tmpname[30];
-    int tmppriority;
-    char tmpduration[4];
     int i;
-    int numUsed;
+    int numUsed = 0;
+    int numMax = 1;
 
-struct schedules schedule[100];
-
+    schedules* schedule = malloc(numMax * sizeof *schedule); //allocating first few memories to be able to store data
     printf("\n" "Starting Festival Scheduler... \n" "\n" "Type 'help' to show lists of syntaxes in the app.\n");
 
     
@@ -46,29 +57,71 @@ struct schedules schedule[100];
             "LIST", "Shows all the list of events in Festival Scheduler."); 
         }
 
-        else if(strcmp(input, "add") == 0){
-            i = 0;
+
+        else if(strcmp(input, "add") == 0){ //if user types the add command.
+            char tmpname[30];
+            int tmppriority;
+            char tmpduration[4];
+            int i = 0;
+            int hour = 0;
+            int min = 0;
+            
+            if(numUsed == numMax)
+            {
+                numMax++;
+                schedule = realloc(schedule, numMax * sizeof *schedule);
+            }
+            
+            printf("Enter the priority of the event... (1 as earliest)\n");
+            scanf ("%d", &tmppriority);
+            i = tmppriority-1;
+            schedule[i].priority = tmppriority;
+            
+
             printf("Enter the name of the event... (30 characters max)\n");
-            scanf ("%s", tmpname);
+            scanf ("%s", schedule[i].name);
+            
 
-            if (strlen(tmpname)<30){
-                printf("Enter the priority of the event... (1 as earliest)\n");
+            printf("Enter the duration of the event... (format HHMM)\n"); 
+            scanf ("%s", schedule[i].duration);
+            numUsed++;
+
+            /*while ()
+            {
+                printf("Please enter a number.");
                 scanf ("%d", &tmppriority);
-                printf("Enter the duration of the event... (format HHMM)\n"); 
-                scanf ("%s", tmpduration);
-
-                i = tmppriority - 1;
-                strcpy(schedule[i].name, tmpname);
-                strcpy(&schedule[i].priority, tmppriority);
-                strcpy(schedule[i].duration, tmpduration);
-
-                printf("Added event successfully.\n");
             }
+            if() //priority have no duplicate entry
+            {
+                i = tmppriority-1;
+                printf("Enter the name of the event... (30 characters max)\n");
+                scanf ("%s", tmpname);
+
+                
+
+                if (strlen(tmpname)<30){
+                    printf("Enter the duration of the event... (format HHMM)\n"); 
+                    scanf ("%s", tmpduration);
+
+                    if() //checks if tmpduration can be converted to hour and minutes
+                    {
+                        printf("Added event successfully.\n");
+                    }
+                    else {
+                        printf("Error! Duration is not in the correct format.\n");
+                    }
+                }
+
+                else {
+                    printf("Error! Event name is over 30 characters long.\n");
+                }
+            
             else {
-                printf("Error! Event name is over 30 characters long.\n");
-            }
-        }
-        /*else if (input, "del") == 0) { //if user types the del command.
+                printf("Error! Priority number already exist on a list.\n");
+            } */
+
+/*
+        else if (input, "del") == 0) { //if user types the del command.
             printf("\n" "Please select an event to delete based on the priority number. \n");
             scanf ("%d", &tmppriority);
 
@@ -86,43 +139,43 @@ struct schedules schedule[100];
             }
             else() {
                 printf("Invalid priority number, please try again. \n");
-            }
+            } */
         }
-
-        else if(strcmp (input, "import") == 0) { //if user types the import command.
-            printf("\n" "Please enter the txt file name.\n");
-            scanf ("%s", input);
-
-            if(success) {
-                printf("\n" "Import successful!\n");
-            }
-            else {
-                printf("\n" "Cannot find the txt file. Please double-check your file name and try again.");
-            }
-        }
-
-        else if(strcmp (input, "export") == 0) {
-            printf("\n" "Please enter a name for the exported txt file.\n");
-            scanf ("%s", input);
-
-            //insert create output code here
-        }
-        */
+        
         else if(strcmp(input, "exit") == 0){ //if user types the exit command.
             break;
         }
 
+
+        else if(strcmp (input, "export") == 0) { //if user types the export command.
+            FILE *fileHandle;
+            char filename[64];
+            int i=0;
+            
+            printf("\n" "Please enter a name for the exported txt file.\n");
+            scanf ("%s", filename);
+
+            fileHandle = fopen(filename, "w");
+            fprintf(fileHandle, "\n" "%-35s %-13s %s\n" "%-35s %-13s %s\n", "Name", "Priority", "Duration", "----------------------------------", "------------", "----------");
+
+            for (i = 0; i<numUsed; i++){
+                fprintf(fileHandle, "%-35s %-13d %s\n", schedule[i].name, schedule[i].priority, schedule[i].duration);
+            }
+
+            printf("Exported txt file successfully.\n");
+            fclose(fileHandle);
+
+        }
+
+
         else if(strcmp(input, "list") == 0){ //if user types the list command.
             printf("\n" "%-35s %-13s %s\n" "%-35s %-13s %s\n", "Name", "Priority", "Duration", "----------------------------------", "------------", "----------");
 
-            i = 0;
-            numUsed = sizeof(schedule) / sizeof(schedule[0]);
-            if(i < numUsed){
+            for (i = 0; i<numUsed; i++){
                 printf("%-35s %-13d %s\n", schedule[i].name, schedule[i].priority, schedule[i].duration);
-                i = i+1;
             }
-
         }
+
 
         else { //if command is not recognised.
             printf ("\n" "Invalid syntax. Type 'help' to show a list of syntaxes.\n");
